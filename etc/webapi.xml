@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
+
 <!--
-  ~ Copyright (c) Shaymaa Saied  24/03/2021, 00:52.
+  ~ @author MYDev 2023.
+  ~ @version 1.0.0
+  ~ @link (https://my-dev.pro)
   -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
