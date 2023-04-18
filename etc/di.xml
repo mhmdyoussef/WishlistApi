@@ -2,5 +2,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="MyDev\WishlistApi\Api\WishlistManagementInterface" type="MyDev\WishlistApi\Model\WishlistManagement" />
     <preference for="MyDev\WishlistApi\Api\Data\WishlistItemInterface" type="MyDev\WishlistApi\Model\WishlistItem" />
+    <preference for="MyDev\WishlistApi\Api\Data\ProductPriceInterface" type="MyDev\WishlistApi\Model\ProductPrice" />
 
 </config>
