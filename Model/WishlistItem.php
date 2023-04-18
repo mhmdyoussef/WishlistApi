@@ -8,7 +8,7 @@
 namespace MyDev\WishlistApi\Model;
 
 
-//use MageArab\CatalogApi\Api\Data\ProductPriceInterface;
+use MyDev\WishlistApi\Api\Data\ProductPriceInterface;
 //use MageArab\CatalogApi\Api\Data\ProductStockInterface;
 use Magento\Framework\Model\AbstractExtensibleModel;
 
@@ -182,26 +182,26 @@ class WishlistItem  extends AbstractExtensibleModel implements \MyDev\WishlistAp
         return $this;
     }
 
-//    /**
-//     * {@inheritdoc}
-//     *
-//     */
-//    public function getPrice()
-//    {
-//        // TODO: Implement getPrice() method.
-//        return $this->getData(self::PRICE_FIELD_KEY);
-//    }
-//
-//    /**
-//     * {@inheritdoc}
-//     *
-//     */
-//    public function setPrice(ProductPriceInterface $price)
-//    {
-//        // TODO: Implement setPrice() method.
-//        $this->setData(self::PRICE_FIELD_KEY, $price);
-//        return $this;
-//    }
+    /**
+     * {@inheritdoc}
+     *
+     */
+    public function getPrice()
+    {
+        // TODO: Implement getPrice() method.
+        return $this->getData(self::PRICE_FIELD_KEY);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     */
+    public function setPrice(ProductPriceInterface $price)
+    {
+        // TODO: Implement setPrice() method.
+        $this->setData(self::PRICE_FIELD_KEY, $price);
+        return $this;
+    }
 
     /**
      * {@inheritdoc}
@@ -245,27 +245,6 @@ class WishlistItem  extends AbstractExtensibleModel implements \MyDev\WishlistAp
 //        $this->setData(self::STOCK_FIELD_KEY, $stock);
 //        return $this;
 //    }
-
-    /**
-     * {@inheritdoc}
-     *
-     */
-    public function getTofahaWeight()
-    {
-        // TODO: Implement getTofahaWeight() method.
-        return (string)$this->getData(self::TOFAHA_WEIGHT);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     */
-    public function setTofahaWeight($tofahaWeight)
-    {
-        // TODO: Implement setTofahaWeight() method.
-        $this->setData(self::TOFAHA_WEIGHT, $tofahaWeight);
-        return $this;
-    }
 
     /**
      * {@inheritdoc}

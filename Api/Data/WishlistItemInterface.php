@@ -6,7 +6,7 @@
  */
 namespace MyDev\WishlistApi\Api\Data;
 
-use Magento\Catalog\Api\Data\ProductInterface;
+use MyDev\WishlistApi\Api\Data\ProductPriceInterface;
 //use MageArab\CatalogApi\Api\Data\ProductStockInterface;
 
 interface WishlistItemInterface
@@ -20,7 +20,7 @@ interface WishlistItemInterface
     const STOCK_FIELD_KEY                               = 'stock';
     const BRAND                                         = 'brand';
     const WEIGHT_UNIT                                   = 'weight_unit';
-    const TOFAHA_WEIGHT                                 = 'MyDev';
+    const MY_DEV                                        = 'MyDev';
     const ADDED_TO_WISHLIS                              = 'added_to_wishlist';
     const ADDED_TO_CART                                 = 'added_to_cart';
     const CATEGORY_NAME                                 = 'category_name';
@@ -208,35 +208,18 @@ interface WishlistItemInterface
     public function setWeightUnit($weightUnit);
 
     /**
-     * Get Tofaha Weight
+     * Get product price object
      *
-     * @return string
+     * @return \MyDev\WishlistApi\Api\Data\ProductPriceInterface
      */
-    public function getTofahaWeight();
+
+    public function getPrice();
+
     /**
-     * Set tofaha weight
-     *
-     * @param string $tofahaWeight
-     * @return $this
+     * @param \MyDev\WishlistApi\Api\Data\ProductPriceInterface $price
+     * @return mixed
      */
-    public function setTofahaWeight($tofahaWeight);
-//
-//
-//    /**
-//     * Get product price object
-//     *
-//     * @return \MageArab\CatalogApi\Api\Data\ProductPriceInterface
-//     */
-//
-//    public function getPrice();
-//
-//    /**
-//     * Set product price
-//     *
-//     * @param ProductInterface $price
-//     * @return $this
-//     */
-//    public function setPrice(ProductInterface $price);
+    public function setPrice(ProductPriceInterface $price);
 //
 //    /**
 //     * Get stock info

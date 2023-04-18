@@ -3,7 +3,7 @@
 namespace MyDev\WishlistApi\Model;
 
 use MyDev\WishlistApi\Api\Data\WishlistItemInterface;
-use Magento\Catalog\Api\Data\ProductInterface;
+use MyDev\WishlistApi\Api\Data\ProductPriceInterface;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -21,6 +21,7 @@ class WishlistManagement implements \MyDev\WishlistApi\Api\WishlistManagementInt
     protected $_productFactory;
     protected $_wishlistItem;
     protected $_productData;
+    protected $_productPrice;
 
     public function __construct(
         CollectionFactory                                                   $wishlistCollectionFactory,
@@ -28,10 +29,11 @@ class WishlistManagement implements \MyDev\WishlistApi\Api\WishlistManagementInt
         \Magento\Wishlist\Model\WishlistFactory                             $wishlistRepository,
         \Magento\Catalog\Api\ProductRepositoryInterface                     $productRepository,
         \Magento\Store\Model\StoreManagerInterface                          $storeManager,
-        \Magento\Catalog\Model\Product                   $productInterfaceFactory,
+        \Magento\Catalog\Model\Product                                      $productInterfaceFactory,
         \MyDev\WishlistApi\Api\Data\WishlistItemInterfaceFactory            $wishlistItem,
-//        \Magento\Catalog\Helper\Product                                     $productData,
-        \Magento\Wishlist\Model\ItemFactory                                 $itemFactory
+        \Magento\Catalog\Helper\Product                                     $productData,
+        \Magento\Wishlist\Model\ItemFactory                                 $itemFactory,
+        ProductPriceInterface                                               $productPrice,
     ) {
         $this->_wishlistCollectionFactory           = $wishlistCollectionFactory;
         $this->_wishlistRepository                  = $wishlistRepository;
@@ -41,7 +43,8 @@ class WishlistManagement implements \MyDev\WishlistApi\Api\WishlistManagementInt
         $this->_storeManager                        = $storeManager;
         $this->_productFactory                      = $productInterfaceFactory;
         $this->_wishlistItem                        = $wishlistItem;
-//        $this->_productData                         = $productData;
+        $this->_productData                         = $productData;
+        $this->_productPrice                        = $productPrice;
     }
 
 
@@ -62,40 +65,38 @@ class WishlistManagement implements \MyDev\WishlistApi\Api\WishlistManagementInt
                 $this->_wishlistCollectionFactory->create()
                     ->addCustomerIdFilter($customerId);
                 /*$wishlistData = [];*/
+
             foreach ($collection as $item) {
                 $productId=$item->getProductId();
                 $productItem=$item->getProduct();
               //  var_dump($productItem->getData());
+                $wishlistItems['item'] = $productItem;
                 $wishlistItem=$this->_wishlistItem->create();
                 $wishlistItem->setId($item->getWishlistItemId());
                 $wishlistItem->setProductId($productId);
                 $wishlistItem->setSku($productItem->getSku());
                 $wishlistItem->setName($productItem->getName());
                 $wishlistItem->setTypeId($productItem->getTypeId());
-                $wishlistItem->setThumbnail($this->_coreData->getImageUrl($productItem->getThumbnail(),'product'));
-                $wishlistItem->setPrice($this->_productPriceProvider->getPriceData($productItem));
-                $wishlistItem->setStock($this->_productStockProvider->getStockData($productItem));
+//                $wishlistItem->setThumbnail($this->_coreData->getImageUrl($productItem->getThumbnail(),'product'));
+                $wishlistItem->setPrice($this->_productPrice->getPrice($productItem->getSku()));
+//                $wishlistItem->setStock($this->_productStockProvider->getStockData($productItem));
 
                 if($productItem->getResource()->getAttribute('a_brand')){
                     $wishlistItem->setBrand($productItem->getResource()->getAttribute('a_brand')->getFrontend()->getValue($productItem));
 
                 }
-                if($productItem->getResource()->getAttribute('tofafa_weight')){
-                    $wishlistItem->setTofahaWeight($productItem->getData('tofaha_weight'));
 
-                }
                 if($productItem->getResource()->getAttribute('weight_unit')){
                     $wishlistItem->setWeightUnit($productItem->getResource()->getAttribute('weight_unit')->getFrontend()->getValue($productItem));
 
                 }
 
-                $wishlistItem->setAddedToWishlist($this->_productData->isAddedToWishlist($productItem,$customerId));
-                if ($quoteQty=$this->_productData->isAddedToCart($productItem,$customerId)){
-                    $wishlistItem->setAddedToCart(true);
-                    $wishlistItem->setQuoteQty($quoteQty);
-                }
+//                $wishlistItem->setAddedToWishlist($this->_productData->isAddedToWishlist($productItem,$customerId));
+//                if ($quoteQty=$this->_productData->isAddedToCart($productItem,$customerId)){
+//                    $wishlistItem->setAddedToCart(true);
+//                    $wishlistItem->setQuoteQty($quoteQty);
+//                }
                 //$wishlistItem->setAddedToCart($this->_productData->isAddedToCart($productItem,$customerId));
-                $wishlistItems[]=$wishlistItem;
 
             }
             return $wishlistItems;
@@ -112,28 +113,21 @@ class WishlistManagement implements \MyDev\WishlistApi\Api\WishlistManagementInt
         // TODO: Implement addItem() method.
         $result=[];
         if ($productSku == null) {
-            throw new LocalizedException(__
-            ('Invalid product, Please select a valid product'));
+            throw new LocalizedException(__('Add product sku, Please select a valid product'));
         }
         try {
             $product = $this->_productRepository->get($productSku);
         } catch (NoSuchEntityException $e) {
             $product = null;
-            throw new LocalizedException(__
-            ('Invalid product, Please select a valid product'));
+            throw new LocalizedException(__('Invalid product, Please select a valid product'));
         }
         try {
-            $wishlist = $this->_wishlistRepository->create()->loadByCustomerId
-            ($customerId, true);
+            $wishlist = $this->_wishlistRepository->create()->loadByCustomerId($customerId, true);
             $data=$wishlist->addNewItem($product);
             $wishlist->save();
             //var_dump($data->getId());
             if($data->getId()){
-                $result=$this->getWishlistItems($customerId);
-                /*array_push($result,[
-                    'status'=>true,
-                    'message'=>'Product has been added'
-                ]);*/
+                $wishlistItems=$this->getWishlistItems($customerId);
             }else{
                 throw new InputException(__('Error while adding product'));
             }
@@ -141,7 +135,7 @@ class WishlistManagement implements \MyDev\WishlistApi\Api\WishlistManagementInt
         } catch (NoSuchEntityException $e) {
             throw new InputException(__('Error while adding product'));
         }
-        return $result;
+        return $wishlistItems;
     }
 
     /**
